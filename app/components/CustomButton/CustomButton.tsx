@@ -3,7 +3,7 @@ import Link from 'next/link';
 
 interface CustomButtonProps {
   text: string;           // Text to display on the button
-  href: string;          // Optional route to navigate to
+  href?: string;          // Optional route to navigate to
 }
 
 const CustomButton: React.FC<CustomButtonProps> = ({ text, href }) => {

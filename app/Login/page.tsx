@@ -1,20 +1,35 @@
 "use client";
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import CustomButton from '../components/CustomButton/CustomButton';
 import CustomInputField from '../components/CustomInputField/CustomInputField';
 import Link from 'next/link';
-import useLoginStore from '../Services&ZustandState/LoginStore';
+import { useRouter } from 'next/navigation';
+import useLoginStore from '../Services&ZustandState/Authentication/LoginStore';
 
 const Login = () => {
-  const { mobileNumber, password, setMobileNumber, setPassword, login } = useLoginStore();
-
+  const { mobileNumber, password, setMobileNumber, setPassword, login, isLoading, token } = useLoginStore();
   const [dialogMessage, setDialogMessage] = useState<string | null>(null);
+  const router = useRouter(); // Only use inside the component
+
+  // Redirect to home if token is available
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const jwtToken = localStorage.getItem('jwtToken');
+      if (jwtToken || token) {
+        router.push('/'); // Redirect to home screen
+      }
+    }
+  }, [token, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const success = await login();
     if (success) {
       setDialogMessage('Login Successful! Welcome back.');
+      setTimeout(() => {
+        router.push('/'); // Redirect to home after successful login
+      }, 1000); // Delay for showing the success message
     } else {
       setDialogMessage('Login Failed. Please check your credentials.');
     }
@@ -37,14 +52,12 @@ const Login = () => {
             value={mobileNumber}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => setMobileNumber(e.target.value)}
           />
-
           <CustomInputField
             type="password"
             placeholder="Password"
             value={password}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
           />
-
           {/* Submit Button */}
           <div className="flex justify-center">
             <CustomButton text="Sign In" />
@@ -55,6 +68,13 @@ const Login = () => {
         {dialogMessage && (
           <div className="mt-4 p-4 bg-gray-200 text-center text-[#1A202C] rounded">
             {dialogMessage}
+          </div>
+        )}
+
+        {/* Loading Spinner */}
+        {isLoading && (
+          <div className="mt-4 p-4 bg-gray-200 text-center text-[#1A202C] rounded">
+            <p>Loading...</p>
           </div>
         )}
 

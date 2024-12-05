@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import CustomButton from '../components/CustomButton/CustomButton';
 import CustomInputField from '../components/CustomInputField/CustomInputField';
 import Link from 'next/link';
-import useRegisterStore from '../Services&ZustandState/RegisterStore';
+import useRegisterStore from '../Services&ZustandState/Authentication/RegisterStore';
 
 const Register = () => {
   const { name, address, mobileNumber, password, setName, setAddress, setMobileNumber, setPassword, register } =

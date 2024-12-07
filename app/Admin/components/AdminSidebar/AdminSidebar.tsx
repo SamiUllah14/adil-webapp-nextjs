@@ -78,13 +78,12 @@ const AdminSidebar: React.FC = () => {
 
   return (
     <div className="relative min-h-screen flex">
-      {/* Mobile toggle button */}
       <button
         onClick={toggleSidebar}
         className="lg:hidden fixed top-4  z-50 text-black:400 focus:outline-none"
       >
-<FiMoreVertical size={24} />
-</button>
+       <FiMoreVertical size={24} />
+       </button>
 
       {/* Sidebar */}
       <div
@@ -92,22 +91,24 @@ const AdminSidebar: React.FC = () => {
         className={`fixed inset-y-0 left-0 bg-gray-800 text-white lg:w-64 w-1/2 transition-transform duration-300 ease-in-out ${
           isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
         } lg:translate-x-0 lg:relative lg:flex lg:flex-col z-50`}
-      >
+        >
         <div className="flex flex-col p-4 space-y-4">
           {/* Close button inside the sidebar */}
           <button
             onClick={toggleSidebar}
             className="lg:hidden fixed top-2 right-4 z-50 text-white focus:outline-none"
-          >
-<FiX size={24} />
-</button>
+             >
+             <FiX size={24} />
+             </button>
 
           {/* Dropdowns */}
           <Dropdown
             title="Admin"
             items={[
-              { label: 'User Management', path: '/Admin/UserManagement' },
-              { label: 'Item 2', path: '/item2' },
+              { label: 'Admin Panel', path: '/Admin/' },
+              { label: 'User Management', path: '/Admin/AdminUserManagement' },
+              { label: 'Staff Management', path: '/Admin/AdminStaffManagement' },
+
             ]}
             dropdownKey="dropdown1"
             toggleDropdown={toggleDropdown}
@@ -116,9 +117,9 @@ const AdminSidebar: React.FC = () => {
           />
 
           <Dropdown
-            title="Dropdown Two"
+            title="Product Management"
             items={[
-              { label: 'Item 1', path: '/item1' },
+              { label: 'Product Management', path: '/Admin/ProductManagement' },
               { label: 'Item 2', path: '/item2' },
             ]}
             dropdownKey="dropdown2"

@@ -1,17 +1,22 @@
-// src/components/Banner/Banner.js
-import React from 'react';
+// src/components/Banner/Banner.tsx
+import React, { FC } from 'react';
+import Image, { StaticImageData } from 'next/image'; // Import StaticImageData for typing
 import './Banner.css';
-import Image from 'next/image';  // Import Image from next/image
-import bannerImage from '@/app/images/bannerImage.png';  // Import the image
 
-const Banner = () => {
+interface BannerProps {
+  imageSrc: string | StaticImageData; // Accept both string and StaticImageData
+  altText: string; // Alt text for accessibility
+  additionalClasses?: string; // Optional additional classes for styling
+}
+
+const Banner: FC<BannerProps> = ({ imageSrc, altText, additionalClasses = '' }) => {
   return (
-    <div className="banner lg:mt-10 mt-5">
+    <div className={`banner lg:mt-10 mt-5 ${additionalClasses}`}>
       <Image
-        src={bannerImage}  // Use the imported image here
-        alt="Banner"
+        src={imageSrc} // Works with StaticImageData
+        alt={altText}
         className="banner-image"
-        layout="responsive" // Optional, to make the image responsive
+        layout="responsive"
       />
     </div>
   );

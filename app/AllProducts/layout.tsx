@@ -1,6 +1,6 @@
 // app/admin/layout.tsx (Admin Layout)
 import React from "react";
-import AdminSidebar from "./components/AdminSidebar/AdminSidebar";
+import AllProductSideBar from "./components/AllProductSideBar";
 
 export default function AdminLayout({
   children,
@@ -10,8 +10,7 @@ export default function AdminLayout({
   return (
     <div className="min-h-screen flex flex-col">
       <div className="flex flex-1">
-        <AdminSidebar /> {/* Persistent Sidebar */}
-
+        <AllProductSideBar/>
         <main className="flex-1 bg-gray-100">{children}</main> {/* Page-specific content */}
       </div>
     </div>

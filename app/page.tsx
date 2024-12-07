@@ -4,6 +4,8 @@ import CustomFeatureBox from "./components/ExploreCategories/CustomBox";
 import HomeBlogComp from "./components/HomeBlogComp/HomeBlogComp";
 import Testimonials from "./components/Testimonials/Testimonials";
 import TopSellingProducts from "./components/TopSellingProducts/TopSellingProducts";
+import bannerImage from "@/app/images/bannerImage.png";
+
 
 export default function Home() {
   return (
@@ -12,7 +14,11 @@ export default function Home() {
     <><div className="flex flex-col min-h-screen lg:max-w-[70%] max-w-[85%] mx-auto">
 
 
-      <Banner />
+<Banner
+          imageSrc={bannerImage} // Pass the imported image
+          altText="Homepage Banner"
+          additionalClasses="custom-class" // Optional
+        />
 
       <div className="mt-20 lg:mt-40 md:mt-40">
         <CustomFeatureBox />

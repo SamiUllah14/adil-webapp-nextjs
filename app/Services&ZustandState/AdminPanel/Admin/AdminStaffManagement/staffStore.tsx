@@ -18,7 +18,7 @@ interface StaffStore {
   deleteStaff: (id: number) => Promise<void>;
 }
 
-const BASE_URL = "http://localhost:5151/api/admin"; // Update with your API base URL
+const BASE_URL = "http://localhost:5151/api/admin"; 
 
 export const useStaffStore = create<StaffStore>((set) => ({
   staff: [],

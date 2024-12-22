@@ -1,30 +1,54 @@
-import React, { useState } from "react";
-import { FaChevronUp, FaChevronDown, FaTimes } from "react-icons/fa";
-import CustomButton from "@/app/components/CustomButton/CustomButton";
+import React, { FC, useState } from 'react';
+import { FaChevronUp, FaChevronDown, FaTimes } from 'react-icons/fa';
+import CustomButton from '@/app/components/CustomButton/CustomButton';
 
-const MobileSidebar: React.FC = () => {
-  const [isOpen, setIsOpen] = useState(false);
+const CATEGORIES = [
+  'Glutathione',
+  'Gummies',
+  'Hair Care',
+  'Heart Health',
+  'Herbal Support',
+  'Immune Support',
+  'Memory & Brain Support',
+  'Men\'s Health',
+  'Multivitamins',
+] as const;
+
+const AVAILABILITY_OPTIONS = [
+  { label: 'In Stock (81)', checked: false },
+  { label: 'Out Of Stock (8)', checked: false },
+] as const;
+
+interface MobileSidebarProps {
+  isOpen: boolean;
+  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+const MobileSidebar: FC<MobileSidebarProps> = ({ isOpen, setIsOpen }) => {
   const [categoriesOpen, setCategoriesOpen] = useState(true);
   const [availabilityOpen, setAvailabilityOpen] = useState(true);
   const [priceOpen, setPriceOpen] = useState(true);
-  const [priceRange, setPriceRange] = useState<number[]>([0, 4500]);
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 4500]);
 
-  const toggleSidebar = () => setIsOpen(!isOpen);
-  const toggleCategories = () => setCategoriesOpen(!categoriesOpen);
-  const toggleAvailability = () => setAvailabilityOpen(!availabilityOpen);
-  const togglePrice = () => setPriceOpen(!priceOpen);
+  const toggleSidebar = () => setIsOpen(prev => !prev);
+  const toggleCategories = () => setCategoriesOpen(prev => !prev);
+  const toggleAvailability = () => setAvailabilityOpen(prev => !prev);
+  const togglePrice = () => setPriceOpen(prev => !prev);
 
-  const handleRangeChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
-    const newRange = [...priceRange];
-    newRange[index] = parseInt(e.target.value, 10);
-    setPriceRange(newRange);
+  const handleRangeChange = (index: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = parseInt(e.target.value, 10);
+    setPriceRange(prev => {
+      const newRange = [...prev] as [number, number];
+      newRange[index] = newValue;
+      return newRange;
+    });
   };
 
   return (
     <>
       {/* Filter Button */}
       <button
-        className="lg:hidden bg-gray-200 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-300 focus:outline-none focus:ring focus:ring-gray-300"
+        className="bg-gray-200 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-300 focus:outline-none focus:ring focus:ring-gray-300"
         onClick={toggleSidebar}
       >
         Filter
@@ -45,7 +69,7 @@ const MobileSidebar: React.FC = () => {
               className="absolute top-4 left-4 text-gray-700 hover:text-black"
               onClick={toggleSidebar}
             >
-              <FaTimes size={24} />
+              <FaTimes size={18} />
             </button>
 
             <div className="mt-12">
@@ -60,17 +84,7 @@ const MobileSidebar: React.FC = () => {
                 </div>
                 {categoriesOpen && (
                   <ul className="mt-3 space-y-2 text-gray-600">
-                    {[
-                      "Glutathione",
-                      "Gummies",
-                      "Hair Care",
-                      "Heart Health",
-                      "Herbal Support",
-                      "Immune Support",
-                      "Memory & Brain Support",
-                      "Men's Health",
-                      "Multivitamins",
-                    ].map((category, index) => (
+                    {CATEGORIES.map((category, index) => (
                       <li
                         key={index}
                         className="hover:text-black cursor-pointer transition-colors"
@@ -93,10 +107,7 @@ const MobileSidebar: React.FC = () => {
                 </div>
                 {availabilityOpen && (
                   <div className="mt-3 text-gray-600 space-y-3">
-                    {[
-                      { label: "In Stock (81)", checked: false },
-                      { label: "Out Of Stock (8)", checked: false },
-                    ].map((item, index) => (
+                    {AVAILABILITY_OPTIONS.map((item, index) => (
                       <label
                         key={index}
                         className="flex items-center space-x-3 cursor-pointer"
@@ -130,7 +141,7 @@ const MobileSidebar: React.FC = () => {
                         min="0"
                         max="4500"
                         value={priceRange[0]}
-                        onChange={(e) => handleRangeChange(e, 0)}
+                        onChange={handleRangeChange(0)}
                         className="w-full accent-black"
                       />
                       <input
@@ -138,7 +149,7 @@ const MobileSidebar: React.FC = () => {
                         min="0"
                         max="4500"
                         value={priceRange[1]}
-                        onChange={(e) => handleRangeChange(e, 1)}
+                        onChange={handleRangeChange(1)}
                         className="w-full accent-black"
                       />
                     </div>
@@ -148,7 +159,7 @@ const MobileSidebar: React.FC = () => {
                         min="0"
                         max="4500"
                         value={priceRange[0]}
-                        onChange={(e) => handleRangeChange(e, 0)}
+                        onChange={handleRangeChange(0)}
                         className="w-20 border border-gray-300 rounded px-2 py-1"
                       />
                       <span>to</span>
@@ -157,7 +168,7 @@ const MobileSidebar: React.FC = () => {
                         min="0"
                         max="4500"
                         value={priceRange[1]}
-                        onChange={(e) => handleRangeChange(e, 1)}
+                        onChange={handleRangeChange(1)}
                         className="w-20 border border-gray-300 rounded px-2 py-1"
                       />
                     </div>
@@ -167,7 +178,7 @@ const MobileSidebar: React.FC = () => {
 
               {/* Apply Button */}
               <div className="py-2 flex items-center justify-center">
-                <CustomButton text={"Apply"} />
+                <CustomButton text="Apply" />
               </div>
             </div>
           </div>

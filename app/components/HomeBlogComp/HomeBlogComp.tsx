@@ -32,7 +32,7 @@ const HomeBlogComp: React.FC = () => {
   />   
 
        </div>
-       <CustomButton text={'VIEW ALL BLOGS'} href={'#'}/>
+       <CustomButton text={'VIEW ALL BLOGS'}/>
 
     </div>
   );

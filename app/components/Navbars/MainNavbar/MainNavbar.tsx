@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { FaSearch, FaBars, FaTimes } from 'react-icons/fa';
+import CustomSearchBar from '../../CustomSearchBar/CustomSearchBar';
 
 const MOBILE_MENU_ITEMS = [
   { href: '#', label: 'Login' },
@@ -23,7 +24,7 @@ const MainNavbar: React.FC = () => {
   const NavLinks = [
     { href: '/', label: 'Home' },
     { href: '/AllProducts', label: 'All Products' },
-    { href: '#', label: 'Shop' },
+    { href: '/ShopLocation', label: 'Location' },
     { href: '#', label: 'Deals' },
     { href: '#', label: 'Blog' },
     { href: '#', label: 'Contact' }
@@ -64,18 +65,11 @@ const MainNavbar: React.FC = () => {
           <FaTimes size={18} />
         </button>
         <div className="p-4">
-          <div className="flex items-center border border-gray-300 rounded">
-            <input 
-              type="text" 
-              placeholder="Search..." 
-              className="w-full p-2 outline-none text-sm" 
-            />
-            <button className="p-2 text-gray-500 hover:text-gray-700">
-              <FaSearch className="text-lg" />
-            </button>
-          </div>
-          <div className="mt-2 text-sm text-gray-600">Search history</div>
-        </div>
+        {/* Replace dummy search bar with CustomSearchBar */}
+        <CustomSearchBar placeholder="Search the store"           onSearchComplete={toggleSearchSidebar} 
+
+           />
+      </div>
       </div>
     </div>
   );

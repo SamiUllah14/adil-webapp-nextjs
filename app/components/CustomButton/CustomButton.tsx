@@ -1,30 +1,31 @@
 "use client";
-import React from 'react';
-import { useRouter } from 'next/navigation';
+
+import React from "react";
+import { useRouter } from "next/navigation";
 
 interface CustomButtonProps {
-  text: string;           // Text to display on the button
-  onClick?: () => void;   // Optional onClick handler for custom behavior
-  route?: string;         // Optional route to navigate to
+  text: string; // Text to display on the button
+  onClick?: () => void; // Optional onClick handler for custom behavior
+  route?: string; // Optional route to navigate to
 }
 
 const CustomButton: React.FC<CustomButtonProps> = ({ text, onClick, route }) => {
-  const router = useRouter();
+  const router = useRouter(); // Correctly place useRouter inside the functional component
 
-  // Function to handle routing on button click if `route` is provided
+  // Handle button click
   const handleClick = () => {
     if (onClick) {
-      onClick(); // Call custom onClick handler if provided
+      onClick(); // Trigger custom behavior if onClick handler is provided
     }
     if (route) {
-      router.push(route); // Navigate to the route if provided
+      router.push(route); // Navigate to the specified route if provided
     }
   };
 
   return (
     <button
       onClick={handleClick}
-      className="bg-[#00bf63] p-3 hover:bg-[#00bf20] text-white font-bold h-[48px] border-b-4 border-black hover:border-gray-400 rounded"
+      className="bg-[#00bf63] p-3 text-white font-bold rounded border-b-4 border-black hover:bg-[#00bf20] hover:border-gray-400 lg:h-[48px] h-[48px] lg:w-[120px] w-[100px] text-[12px] lg:text-[16px]"
     >
       {text}
     </button>

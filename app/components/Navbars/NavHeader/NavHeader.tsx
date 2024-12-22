@@ -1,89 +1,105 @@
 "use client";
+
 import React, { useState, useEffect } from "react";
-import {  FaShoppingCart } from "react-icons/fa";
-import Sidebar from "./Sidebar"; // Import Sidebar component
-import Link from "next/link"; // Import Link from next/link
+import { FaShoppingCart } from "react-icons/fa";
+import Sidebar from "./Sidebar";
+import Link from "next/link";
 import useLoginStore from "@/app/Services&ZustandState/Authentication/LoginStore";
 import CustomSearchBar from "../../CustomSearchBar/CustomSearchBar";
+import { useCartStore } from "@/app/ShoppingCart/ZustandStore/store";
+import { useRouter } from 'next/navigation'
 
 const NavHeader = () => {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // State for managing sidebar visibility
-  const { token, logout } = useLoginStore(); // Get token from Zustand store
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const { token, logout } = useLoginStore();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const { cartItems } = useCartStore();
 
-  const openSidebar = () => {
-    setIsSidebarOpen(true); // Set sidebar to open
-  };
+  const closeSidebar = () => setIsSidebarOpen(false);
+  const router = useRouter()
 
-  const closeSidebar = () => {
-    setIsSidebarOpen(false); // Set sidebar to close
-  };
+  const totalCartQuantity = cartItems.reduce(
+    (total, item) => total + item.quantity,
+    0
+  );
 
-  // Check if user is logged in based on token
   useEffect(() => {
     if (token || localStorage.getItem("jwtToken")) {
-      setIsLoggedIn(true); // User is logged in
+      setIsLoggedIn(true);
     } else {
-      setIsLoggedIn(false); // User is not logged in
+      setIsLoggedIn(false);
     }
   }, [token]);
 
   const handleLogout = () => {
-    // Clear credentials and token from state and local storage
-    logout(); // Remove user data from Zustand
-    localStorage.removeItem("jwtToken"); // Clear token from local storage
-    setIsLoggedIn(false); // Update the state to reflect the logout
+    logout();
+    localStorage.removeItem("jwtToken");
+    setIsLoggedIn(false);
   };
 
   return (
     <>
-      <Sidebar isOpen={isSidebarOpen} closeSidebar={closeSidebar} /> {/* Sidebar component */}
-      <nav className="header fixed top-0 left-0 w-full flex items-center py-4 px-8 border-b bg-white z-40 justify-between md:justify-evenly">
-        {/* Clickable Adil Pharmacy Section */}
-        <Link href="/" className="flex items-center">
-          <img src="https://placehold.co/50x50" alt="Adil Pharmacy logo" className="mr-2" />
-          <div>
-            <h1 className="text-xl font-bold text-green-700">Adil Pharmacy</h1>
-            <p className="text-sm text-gray-500">Wellness for Life</p>
+      <Sidebar isOpen={isSidebarOpen} closeSidebar={closeSidebar} />
+      <nav className="fixed top-0 left-0 w-full bg-white shadow-md z-40">
+        <div className="container mx-auto flex items-center justify-between py-4 px-6 lg:px-12">
+          <Link href="/" className="flex items-center">
+            <img
+              src="https://placehold.co/50x50"
+              alt="Adil Pharmacy logo"
+              className="h-12 w-12 rounded-full mr-3"
+            />
+            <div>
+              <h1 className="text-2xl font-semibold text-green-600">
+                Adil Pharmacy
+              </h1>
+              <p className="text-sm text-gray-500">Wellness for Life</p>
+            </div>
+          </Link>
+
+          <div className="hidden lg:flex flex-1 mx-6">
+            <CustomSearchBar
+              placeholder="Search Store"
+             
+            />
           </div>
-        </Link>
-        <div className="hidden lg:flex">
-        <CustomSearchBar placeholder={"Search Store"} onSearch={function (): void {
-          throw new Error("Function not implemented.");
-        } }/>
-        </div>
 
-
-
-        <div className="flex items-center">
-          {/* Conditional Login/Logout */}
-          <div className="hidden lg:flex items-center mr-4">
+          <div className="flex items-center space-x-4">
             {isLoggedIn ? (
-              <>
-                <i className="fas fa-user text-xl"></i>
-                <div className="ml-2">
-                  <button onClick={handleLogout} className="text-blue-600">
+              <div className="hidden lg:flex items-center space-x-2">
+                <i className="fas fa-user text-xl text-gray-600"></i>
+                <div>
+                  <button
+                    onClick={handleLogout}
+                    className="text-blue-500 hover:text-blue-600"
+                  >
                     Logout
                   </button>
                   <p className="text-sm text-gray-500">Welcome back!</p>
                 </div>
-              </>
+              </div>
             ) : (
-              <div className="ml-2">
-                <Link href="/Login" className="text-blue-600">
+              <div className="hidden lg:flex items-center space-x-2">
+                <Link href="/Login" className="text-blue-500 hover:text-blue-600">
                   Login
-                </Link>{" "}
-                or{" "}
-                <Link href="/Register" className="text-blue-600">
+                </Link>
+                <span className="text-gray-400">or</span>
+                <Link href="/Register" className="text-blue-500 hover:text-blue-600">
                   Register
                 </Link>
-                <p className="text-sm text-gray-500">Wellness Account</p>
               </div>
             )}
-          </div>
-          <div className="flex items-center cursor-pointer" onClick={openSidebar}>
-            <FaShoppingCart className="text-xl text-gray-500" />
-            <span className="ml-1 text-sm">0</span>
+
+            <div
+              className="relative flex items-center cursor-pointer"
+              onClick={() => router.push('/ShoppingCart')}              
+            >
+              <FaShoppingCart className="text-2xl text-gray-600" />
+              {totalCartQuantity > 0 && (
+                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold h-5 w-5 flex items-center justify-center rounded-full">
+                  {totalCartQuantity}
+                </span>
+              )}
+            </div>
           </div>
         </div>
       </nav>

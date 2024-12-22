@@ -1,35 +1,44 @@
-import React, { useState } from 'react';
-import { FaSearch } from 'react-icons/fa';
+import React, { useState } from "react";
+import { FaSearch } from "react-icons/fa";
+import { useRouter } from 'next/navigation';
+import useProductStore from "@/app/AllProducts/ZustandStore/AllProductStore";
 
 interface CustomSearchBarProps {
-  placeholder: string; // Custom placeholder text
-  onSearch: (query: string) => void; // Function to handle search logic
+  placeholder: string;
+  onSearchComplete: () => void; // Callback function to handle sidebar close
 }
 
-const CustomSearchBar: React.FC<CustomSearchBarProps> = ({ placeholder = "Search the store", onSearch }) => {
+const CustomSearchBar: React.FC<CustomSearchBarProps> = ({
+  placeholder = "Search the store",
+  onSearchComplete,
+}) => {
   const [query, setQuery] = useState("");
+  const router = useRouter();
+  const searchProducts = useProductStore((state) => state.searchProducts);
 
-  const handleSearch = () => {
-    if (onSearch) {
-      onSearch(query);
+  const handleSearch = async () => {
+    if (query.trim()) {
+      await searchProducts({ name: query });
+      router.push("/SearchProducts");
+      onSearchComplete(); // Close the sidebar after search
     }
   };
 
   return (
-    <div className=" items-center">
-      <div className="relative lg:w-96">
+    <div className="flex justify-center items-center">
+      <div className="relative w-full max-w-lg">
         <input
           type="text"
           placeholder={placeholder}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          className="border rounded-full px-4 py-2 w-full shadow-md pr-12"
+          className="block w-full rounded-full border border-gray-300 bg-white py-3 px-4 pr-14 shadow-sm focus:ring-2 focus:ring-green-500 focus:outline-none"
         />
         <button
           onClick={handleSearch}
-          className="absolute right-3 top-1/2 transform -translate-y-1/2"
+          className="absolute inset-y-0 right-4 flex items-center text-gray-500 hover:text-green-500"
         >
-          <FaSearch className="text-gray-500 text-lg" />
+          <FaSearch className="text-xl" />
         </button>
       </div>
     </div>

@@ -129,9 +129,9 @@ const AdminSidebar: React.FC = () => {
           />
 
           <Dropdown
-            title="Dropdown Three"
+            title="Editor"
             items={[
-              { label: 'Item 1', path: '/item1' },
+              { label: 'Add Product', path: '/Admin/EditorProductManagement' },
               { label: 'Item 2', path: '/item2' },
             ]}
             dropdownKey="dropdown3"

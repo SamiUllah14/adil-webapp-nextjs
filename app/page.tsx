@@ -1,4 +1,4 @@
-import AllProducts from "./components/AllProducts/AllProducts";
+import AllProducts from "./components/ExploreAllMedicines/AllProducts";
 import Banner from "./components/Banner/Banner";
 import CustomFeatureBox from "./components/ExploreCategories/CustomBox";
 import HomeBlogComp from "./components/HomeBlogComp/HomeBlogComp";

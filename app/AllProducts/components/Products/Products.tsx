@@ -1,31 +1,32 @@
-// components/ProductGrid.tsx
-"use client";
-
 import React, { useState, useEffect } from "react";
-import ProductCard from "./ProductCard"; // Ensure correct path
+import ProductCard from "./ProductCard";
 import useProductStore from "../../ZustandStore/AllProductStore";
 import MobileSidebar from "../SideBar/MobileSidebar";
 import CustomButton from "@/app/components/CustomButton/CustomButton";
+import { Product } from "../../ZustandStore/type";
 
 const ProductGrid: React.FC = () => {
   const [sortOption, setSortOption] = useState<string>("Alphabetical-A-Z");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [visibleCount, setVisibleCount] = useState<number>(6); // Initial visible products
+  const [currentPage, setCurrentPage] = useState(1);
   const { products, fetchProducts, isLoading, error } = useProductStore();
 
   useEffect(() => {
     if (products.length === 0) {
-      fetchProducts();
+      fetchProducts({ page: 1, pageSize: 12 });
     }
   }, [fetchProducts, products.length]);
 
   const handleSort = (option: string) => {
     setSortOption(option);
-    setVisibleCount(6); // Reset visible count when sorting changes
+    setCurrentPage(1);
+    fetchProducts({ page: 1, pageSize: 12 });
   };
 
   const handleLoadMore = () => {
-    setVisibleCount((prevCount) => prevCount + 10);
+    const nextPage = currentPage + 1;
+    setCurrentPage(nextPage);
+    fetchProducts({ page: nextPage, pageSize: 12 });
   };
 
   const sortedProducts = products.slice().sort((a, b) => {
@@ -43,10 +44,9 @@ const ProductGrid: React.FC = () => {
     }
   });
 
-  const visibleProducts = sortedProducts.slice(0, visibleCount);
-  const hasMore = visibleCount < sortedProducts.length;
-
-  if (isLoading) return <p className="text-center mt-10">Loading products...</p>;
+  if (isLoading && products.length === 0) {
+    return <p className="text-center mt-10">Loading products...</p>;
+  }
   if (error) return <p className="text-center mt-10 text-red-500">Error: {error}</p>;
 
   return (
@@ -65,27 +65,25 @@ const ProductGrid: React.FC = () => {
         <MobileSidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
       </div>
 
-      {visibleProducts.length === 0 ? (
+      {sortedProducts.length === 0 ? (
         <p className="text-center mt-10">No products available.</p>
       ) : (
         <>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-            {visibleProducts.map((product) => (
+            {sortedProducts.map((product: Product) => (
               <ProductCard key={product.id} product={product} />
             ))}
           </div>
 
-          {hasMore && (
-            <div className="flex justify-center mt-6">
-              <CustomButton text="Load More" onClick={handleLoadMore} />
-            </div>
-          )}
-
-          {!hasMore && (
-            <p className="text-center mt-6 text-gray-500">
-              You have reached the end of the product list.
-            </p>
-          )}
+          <div className="flex justify-center mt-6">
+            {isLoading ? (
+              <p>Loading more products...</p>
+            ) : (
+              sortedProducts.length % 12 === 0 && (
+                <CustomButton text="Load More" onClick={handleLoadMore} />
+              )
+            )}
+          </div>
         </>
       )}
     </div>

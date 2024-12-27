@@ -1,12 +1,23 @@
 "use client";
-import { useState } from "react";
-import useProductStore from "@/app/Admin/EditorProductManagement/ZustandStore/api";
+
+import useProductStore, { Product } from "@/app/AllProducts/ZustandStore/AllProductStore";
+import { useEffect, useState } from "react";
+import useCategoryStore from "../../AddCategories/store/Category";
+
+
 
 const ProductForm = () => {
   const { createProduct, isLoading, error } = useProductStore();
-  const [formData, setFormData] = useState({
+  const { categories, fetchCategories } = useCategoryStore();
+
+  useEffect(() => {
+    fetchCategories();
+  }, [fetchCategories]);
+
+  const [formData, setFormData] = useState<Product>({
     id: 0,
     name: "",
+    reviews: 0,
     price: 0,
     discount: 0,
     imageUrl: "",
@@ -30,13 +41,18 @@ const ProductForm = () => {
     precautionsAndWarnings: "",
     drugInteractions: "",
     storageOrDisposal: "",
+    categoryName: "",
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: name === "price" || name === "discount" || name === "rating" || name === "reviewsCount"
+      [name]: ["price", "discount", "rating", "reviewsCount", "sizeStrip", "detailsStrip"].includes(
+        name
+      )
         ? Number(value)
         : value,
     }));
@@ -44,12 +60,19 @@ const ProductForm = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!formData.categoryName) {
+      alert("Please select a category for the product.");
+      return;
+    }
+
     try {
       await createProduct(formData);
       alert("Product added successfully!");
       setFormData({
         id: 0,
         name: "",
+        reviews: 0,
         price: 0,
         discount: 0,
         imageUrl: "",
@@ -73,12 +96,12 @@ const ProductForm = () => {
         precautionsAndWarnings: "",
         drugInteractions: "",
         storageOrDisposal: "",
+        categoryName: "",
       });
     } catch (err) {
       console.error("Failed to add product:", err);
     }
   };
-
   return (
     <div className="bg-gray-100 min-h-screen flex items-center justify-center p-6">
       <form 
@@ -354,7 +377,26 @@ const ProductForm = () => {
             />
           </div>
         </div>
-        
+         {/* Dropdown for Categories */}
+         <div className="space-y-4">
+            <label htmlFor="categoryName" className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+            <select
+              id="categoryName"
+              name="categoryName"
+              value={formData.categoryName}
+              onChange={handleChange}
+              required
+              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="" disabled>Select a category</option>
+              {categories.map((category) => (
+                <option key={category.id} value={category.name}>
+                  {category.name}
+                </option>
+              ))}
+            </select>
+          </div>
+              
         <div className="text-center">
           <button 
             type="submit" 
@@ -364,6 +406,7 @@ const ProductForm = () => {
             {isLoading ? "Saving..." : "Add Product"}
           </button>
         </div>
+        
       </form>
     </div>
   );

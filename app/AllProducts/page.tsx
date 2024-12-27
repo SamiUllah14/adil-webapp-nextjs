@@ -6,6 +6,7 @@ import Banner from "../components/Banner/Banner";
 import bannerImage from "@/app/images/allProducts.png";
 import ProductGrid from "./components/Products/Products";
 import useProductStore from "./ZustandStore/AllProductStore";
+import AllProductsMobile from "@/app/images/AllProductsMobile.png";
 
 const Page: React.FC = () => {
   const { fetchProducts, isLoading, error } = useProductStore();
@@ -16,8 +17,12 @@ const Page: React.FC = () => {
 
   return (
     <div className="flex flex-col min-h-screen lg:max-w-[70%] max-w-[85%] mx-auto">
-      <Banner imageSrc={bannerImage} altText="All Products Banner" />
-      <ProductGrid />
+<Banner
+      desktopImageSrc={bannerImage} // Image for desktop
+      mobileImageSrc={AllProductsMobile}   // Image for mobile
+      altText="Welcome Banner"
+      additionalClasses="custom-banner"
+    />      <ProductGrid />
       {/* Optionally, handle loading and error states here if not handled within ProductGrid */}
       {isLoading && <p>Loading more products...</p>}
       {error && <p>Error loading products: {error}</p>}
@@ -26,3 +31,4 @@ const Page: React.FC = () => {
 };
 
 export default Page;
+

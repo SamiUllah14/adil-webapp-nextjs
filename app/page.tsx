@@ -1,10 +1,11 @@
 import AllProducts from "./components/ExploreAllMedicines/AllProducts";
 import Banner from "./components/Banner/Banner";
-import CustomFeatureBox from "./components/ExploreCategories/CustomBox";
+import CustomFeatureBox from "./Categories/components/CustomCategoryBox/CustomBox";
 import HomeBlogComp from "./components/HomeBlogComp/HomeBlogComp";
 import Testimonials from "./components/Testimonials/Testimonials";
 import TopSellingProducts from "./components/TopSellingProducts/TopSellingProducts";
 import bannerImage from "@/app/images/bannerImage.png";
+import AdilPharmacyMobile from "@/app/images/AdilPharmacyMobile.png";
 
 
 export default function Home() {
@@ -15,11 +16,11 @@ export default function Home() {
 
 
 <Banner
-          imageSrc={bannerImage} // Pass the imported image
-          altText="Homepage Banner"
-          additionalClasses="custom-class" // Optional
-        />
-
+      desktopImageSrc={bannerImage} // Image for desktop
+      mobileImageSrc={AdilPharmacyMobile}   // Image for mobile
+      altText="Welcome Banner"
+      additionalClasses="custom-banner"
+    />
       <div className="mt-20 lg:mt-40 md:mt-40">
         <CustomFeatureBox />
 

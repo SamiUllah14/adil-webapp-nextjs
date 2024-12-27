@@ -24,7 +24,7 @@ const MainNavbar: React.FC = () => {
   const NavLinks = [
     { href: '/', label: 'Home' },
     { href: '/AllProducts', label: 'All Products' },
-    { href: '/ShopLocation', label: 'Location' },
+    { href: '/adil-pharmacy-pasrur', label: 'Location' },
     { href: '#', label: 'Deals' },
     { href: '#', label: 'Blog' },
     { href: '#', label: 'Contact' }

@@ -55,7 +55,7 @@ const AllProducts: React.FC = () => {
       </div>
 
       <div className="flex justify-center pt-5">
-        <CustomButton text="EXPLORE ALL MEDICINES" route="/AllProducts" />
+        <CustomButton text="ALL EXPLORE" route="/AllProducts" />
       </div>
     </div>
   );

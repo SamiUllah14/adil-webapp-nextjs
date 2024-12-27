@@ -1,8 +1,9 @@
-'use client';
-
+"use client";
 import React, { useState, useEffect } from "react";
 import { FaMapMarkerAlt, FaCity, FaPhoneAlt, FaTruck } from "react-icons/fa";
 import OrderReportComponent from "./components/report";
+import CustomButton from "../components/CustomButton/CustomButton";
+import { useCartStore } from "@/app/ShoppingCart/ZustandStore/store";
 
 const pakistaniCities = [
   "Abbottabad",
@@ -92,8 +93,6 @@ const pakistaniCities = [
   "Sukkur",
   "Swabi",
   "Tando Adam",
-  "Tando Allahyar",
-  "Tank",
   "Toba Tek Singh",
   "Vehari",
   "Wah Cantonment",
@@ -101,80 +100,106 @@ const pakistaniCities = [
   "Zhob",
 ];
 
-export default function DeliveryFormPage() {
-  const [isMobile, setIsMobile] = useState(false);
 
-  // Update `isMobile` based on screen size
+
+
+const DeliveryFormPage: React.FC = () => {
+  const [isMobile, setIsMobile] = useState(false);
+  const { cartItems, calculateTotal } = useCartStore();
+  const [address, setAddress] = useState("");
+  const [city, setCity] = useState("Pasrur");
+  const [altPhone, setAltPhone] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth <= 768);
-    handleResize(); // Check initially
+    handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const [address, setAddress] = useState("");
-  const [city, setCity] = useState("Pasrur");
-  const [altPhone, setAltPhone] = useState("");
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Form submitted:", { address, city, altPhone });
+    setLoading(true);
+    const delivery = { address, city, altPhone };
+    const totalAmount = calculateTotal();
+    const tax = 10;
+    const finalAmount = totalAmount + tax;
+    const orderItems = cartItems.map(item => ({
+      productName: item.name,
+      quantity: item.quantity,
+      unitPrice: item.price,
+      totalPrice: item.quantity * item.price,
+    }));
+    const order = { totalAmount, tax, finalAmount, orderItems };
+    const payload = { delivery, order };
+
+    try {
+      const response = await fetch("http://localhost:5151/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log("Order placed. Order ID:", data.OrderId);
+        setSuccess(true);
+      } else {
+        console.error("Failed to place order:", await response.json());
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-gray-50 p-4">
       <div className="flex w-full max-w-5xl flex-col gap-8">
-        {/* Conditional rendering based on screen size */}
-        {isMobile && (
-          <div className="w-full">
-            <OrderReportComponent />
-          </div>
-        )}
-
+        {isMobile && <OrderReportComponent />}
         <div className="w-full rounded-xl bg-white p-6 shadow-lg">
           <div className="mb-8 flex items-center gap-2 text-primary-600">
             <FaTruck className="h-6 w-6" />
             <h1 className="text-2xl font-bold text-gray-800">Delivery Details</h1>
           </div>
-
           <form onSubmit={handleSubmit} className="space-y-5">
+            {/* Address */}
             <div>
-              <label htmlFor="address" className="mb-1 block text-sm font-medium text-gray-700">
+              <label htmlFor="address" className="block text-sm font-medium">
                 Address
               </label>
               <div className="relative">
-                <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
-                  <FaMapMarkerAlt />
-                </span>
+                <FaMapMarkerAlt className="absolute left-3 top-2 text-gray-400" />
                 <input
                   id="address"
                   type="text"
-                  placeholder="Enter your full address"
+                  placeholder="Enter your address"
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
-                  className="block w-full rounded-md border border-gray-300 bg-white py-2 pl-10 pr-3 text-gray-700 focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
                   required
+                  className="pl-10"
                 />
               </div>
             </div>
 
-            {/* City Input */}
+            {/* City */}
             <div>
-              <label htmlFor="city" className="mb-1 block text-sm font-medium text-gray-700">
+              <label htmlFor="city" className="block text-sm font-medium">
                 City
               </label>
               <div className="relative">
-                <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
-                  <FaCity />
-                </span>
+                <FaCity className="absolute left-3 top-2 text-gray-400" />
                 <select
                   id="city"
                   value={city}
                   onChange={(e) => setCity(e.target.value)}
-                  className="block w-full appearance-none rounded-md border border-gray-300 bg-white py-2 pl-10 pr-8 text-gray-700 focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
                   required
+                  className="pl-10"
                 >
-                  {pakistaniCities.map((cityName) => (
+                  {pakistaniCities.map(cityName => (
                     <option key={cityName} value={cityName}>
                       {cityName}
                     </option>
@@ -183,60 +208,33 @@ export default function DeliveryFormPage() {
               </div>
             </div>
 
-            {/* Alternative Phone Input */}
+            {/* Phone */}
             <div>
-              <label htmlFor="altPhone" className="mb-1 block text-sm font-medium text-gray-700">
+              <label htmlFor="altPhone" className="block text-sm font-medium">
                 Mobile Number
               </label>
               <div className="relative">
-                <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
-                  <FaPhoneAlt />
-                </span>
+                <FaPhoneAlt className="absolute left-3 top-2 text-gray-400" />
                 <input
                   id="altPhone"
                   type="tel"
                   placeholder="Provide another contact"
                   value={altPhone}
                   onChange={(e) => setAltPhone(e.target.value)}
-                  className="block w-full rounded-md border border-gray-300 bg-white py-2 pl-10 pr-3 text-gray-700 focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
+                  required
+                  className="pl-10"
                 />
               </div>
-              <p className="mt-1 text-xs text-gray-500">
-                Provide a number to ensure successful delivery.
-              </p>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Payment Method
-              </label>
-              <button
-                type="button"
-                className="mt-1 w-full cursor-not-allowed rounded-md bg-primary-600 py-2 px-4 text-sm font-semibold text-black shadow hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
-                disabled
-              >
-                Cash On Delivery only
-              </button>
-            </div>
-
-            <div className="pt-5">
-              <button
-                type="submit"
-                className="w-full rounded-md bg-green-600 py-2 px-4 text-sm font-semibold text-white shadow hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
-              >
-                Proceed
-              </button>
-            </div>
+            <CustomButton text={loading ? "Processing..." : "Proceed"} />
           </form>
+          {success && <p className="text-green-500 mt-4">Order placed successfully!</p>}
         </div>
-
-        {/* Render Order Report below for non-mobile view */}
-        {!isMobile && (
-          <div className="w-2/2">
-            <OrderReportComponent />
-          </div>
-        )}
+        {!isMobile && <OrderReportComponent />}
       </div>
     </main>
   );
-}
+};
+
+export default DeliveryFormPage;

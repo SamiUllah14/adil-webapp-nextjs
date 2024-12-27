@@ -1,7 +1,7 @@
 .cardbox {
   display: flex;
   height: 15vh; /* Adjust based on the desired size */
-  background-color: whitesmoke;
+  background-color: white;
   border-radius: 20px;
   width: 30vh;
   justify-content: center;
@@ -18,7 +18,7 @@
 
 .titleTextDiv {
   display: flex;
-  flex: 2;
+  flex: 1;
   height: 100%; /* Use full height of the parent */
   justify-content: center;
   align-items: center;

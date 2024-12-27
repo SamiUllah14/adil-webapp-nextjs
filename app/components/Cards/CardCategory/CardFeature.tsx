@@ -16,7 +16,7 @@ const CardFeature: React.FC<CardFeatureProps> = ({ title, imageUrl, onClick }) =
       <div className="imagediv" style={{ backgroundImage: `url(${imageUrl})` }}>
         {/* Image background is set dynamically */}
       </div>
-      <div className="titleTextDiv">
+      <div className="titleTextDiv text-sm lg:text-lg ">
         <h3>{title}</h3>
       </div>
     </div>

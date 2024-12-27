@@ -25,7 +25,7 @@ const CustomButton: React.FC<CustomButtonProps> = ({ text, onClick, route }) => 
   return (
     <button
       onClick={handleClick}
-      className="bg-[#00bf63] p-3 text-white font-bold rounded border-b-4 border-black hover:bg-[#00bf20] hover:border-gray-400 lg:h-[48px] h-[48px] lg:w-[120px] w-[100px] text-[12px] lg:text-[16px]"
+      className="bg-[#00bf63] p-3 text-white font-bold rounded border-b-4 border-black hover:bg-[#00bf20] hover:border-gray-400  "
     >
       {text}
     </button>

@@ -119,8 +119,7 @@ const AdminSidebar: React.FC = () => {
           <Dropdown
             title="Product Management"
             items={[
-              { label: 'Product Management', path: '/Admin/ProductManagement' },
-              { label: 'Item 2', path: '/item2' },
+              { label: 'Orders', path: '/Admin/Orders' },
             ]}
             dropdownKey="dropdown2"
             toggleDropdown={toggleDropdown}
@@ -131,8 +130,8 @@ const AdminSidebar: React.FC = () => {
           <Dropdown
             title="Editor"
             items={[
-              { label: 'Add Product', path: '/Admin/EditorProductManagement' },
-              { label: 'Item 2', path: '/item2' },
+              { label: 'Add Product', path: '/Admin/EditorProductManagement/Id' },
+              { label: 'Add Categories', path: '/Admin/AddCategories' },
             ]}
             dropdownKey="dropdown3"
             toggleDropdown={toggleDropdown}

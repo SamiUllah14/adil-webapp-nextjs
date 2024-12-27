@@ -6,9 +6,17 @@ import useProductStore, { Product } from "../../ZustandStore/AllProductStore";
 
 interface ProductCardProps {
   product: Product;
+  onClick?: (product: Product) => void; // Optional callback for custom click handling
+  showDiscountBadge?: boolean; // Option to show or hide the discount badge
+  showViewDetailsButton?: boolean; // Option to show or hide the "View Details" button
 }
 
-const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
+const ProductCard: React.FC<ProductCardProps> = ({
+  product,
+  onClick,
+  showDiscountBadge = true,
+  showViewDetailsButton = true,
+}) => {
   const setSelectedProduct = useProductStore((state) => state.setSelectedProduct);
 
   const generateSlug = (name: string) =>
@@ -17,7 +25,11 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const remainingPrice = product.price * (1 - product.discount / 100);
 
   const handleClick = () => {
-    setSelectedProduct({ ...product, remainingPrice }); // Update Zustand here!
+    if (onClick) {
+      onClick(product); // Trigger custom click handling
+    } else {
+      setSelectedProduct({ ...product, remainingPrice }); // Default Zustand handling
+    }
   };
 
   const slug = generateSlug(product.name);
@@ -30,7 +42,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         onClick={handleClick}
       >
         {/* Discount Badge */}
-        {product.discount > 0 && (
+        {showDiscountBadge && product.discount > 0 && (
           <div className="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full">
             {product.discount}% OFF
           </div>
@@ -58,12 +70,14 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         {/* Discounted Price */}
         <p className="text-primary font-bold mt-1">Rs.{remainingPrice.toFixed(2)}</p>
 
-        {/* Optional: Add a hover effect or additional information */}
-        <div className="mt-3">
-          <button className="w-full bg-[#00bf63] text-white py-2 px-4 rounded hover:bg-[#00bf20] transition-colors duration-300">
-            View Details
-          </button>
-        </div>
+        {/* Optional "View Details" Button */}
+        {showViewDetailsButton && (
+          <div className="mt-3">
+            <button className="w-full bg-[#00bf63] text-white py-2 px-4 rounded hover:bg-[#00bf20] transition-colors duration-300">
+              View Details
+            </button>
+          </div>
+        )}
       </div>
     </Link>
   );

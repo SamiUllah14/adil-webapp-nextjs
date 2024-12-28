@@ -1,35 +1,40 @@
-"use client";
+'use client';
 
 import React, { useState } from 'react';
 import { FaSearch, FaBars, FaTimes } from 'react-icons/fa';
 import CustomSearchBar from '../../CustomSearchBar/CustomSearchBar';
-
-const MOBILE_MENU_ITEMS = [
-  { href: '#', label: 'Login' },
-  { href: '#', label: 'Register' },
-  { href: '/AllProducts', label: 'All Products' },
-  { href: '#', label: 'Shop' },
-  { href: '#', label: 'Deals' },
-  { href: '#', label: 'Blog' },
-  { href: '#', label: 'Contact' }
-];
+import useLoginStore from '@/app/Services&ZustandState/Authentication/LoginStore';
 
 const MainNavbar: React.FC = () => {
+  const { role } = useLoginStore(); // Get role from Zustand store
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchSidebarOpen, setIsSearchSidebarOpen] = useState(false);
 
-  const toggleMobileMenu = () => setIsMobileMenuOpen(prev => !prev);
-  const toggleSearchSidebar = () => setIsSearchSidebarOpen(prev => !prev);
+  const toggleMobileMenu = () => setIsMobileMenuOpen((prev) => !prev);
+  const toggleSearchSidebar = () => setIsSearchSidebarOpen((prev) => !prev);
 
+  // Navbar links
   const NavLinks = [
     { href: '/', label: 'Home' },
     { href: '/AllProducts', label: 'All Products' },
     { href: '/adil-pharmacy-pasrur', label: 'Location' },
-    { href: '#', label: 'Deals' },
     { href: '#', label: 'Blog' },
-    { href: '#', label: 'Contact' }
+    { href: '#', label: 'Contact' },
+    ...(role === 'Admin' ? [{ href: '/Admin', label: 'Admin Panel' }] : []), // Admin-specific link
   ];
 
+  // Mobile menu links
+  const MOBILE_MENU_ITEMS = [
+    { href: '#', label: 'Login' },
+    { href: '#', label: 'Register' },
+    { href: '/AllProducts', label: 'All Products' },
+    { href: '/adil-pharmacy-pasrur', label: 'Location' },
+    { href: '#', label: 'Blog' },
+    { href: '#', label: 'Contact' },
+    ...(role === 'Admin' ? [{ href: '/Admin', label: 'Admin Panel' }] : []), // Admin-specific link
+  ];
+
+  // Mobile menu overlay component
   const MobileMenuOverlay = () => (
     <div className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-50 transition-opacity duration-300">
       <div className="absolute top-0 left-0 bg-white w-64 h-full p-4 rounded-tr-lg rounded-br-lg shadow-lg transform transition-transform duration-300 ease-in-out">
@@ -54,22 +59,23 @@ const MainNavbar: React.FC = () => {
       </div>
     </div>
   );
-  
+
+  // Search sidebar component
   const SearchSidebar = () => (
     <div className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-50 transition-opacity duration-300">
       <div className="absolute top-0 left-0 bg-white w-80 h-full p-4">
-        <button 
-          onClick={toggleSearchSidebar} 
+        <button
+          onClick={toggleSearchSidebar}
           className="flex justify-end w-full p-2"
         >
           <FaTimes size={18} />
         </button>
         <div className="p-4">
-        {/* Replace dummy search bar with CustomSearchBar */}
-        <CustomSearchBar placeholder="Search the store"           onSearchComplete={toggleSearchSidebar} 
-
-           />
-      </div>
+          <CustomSearchBar
+            placeholder="Search the store"
+            onSearchComplete={toggleSearchSidebar}
+          />
+        </div>
       </div>
     </div>
   );
@@ -78,8 +84,8 @@ const MainNavbar: React.FC = () => {
     <div className="w-full pt-20 shadow-lg bg-[#00bf63]">
       {/* Mobile Menu Toggle */}
       <div className="lg:hidden px-8 py-4 flex items-center justify-between">
-        <button 
-          onClick={toggleMobileMenu} 
+        <button
+          onClick={toggleMobileMenu}
           className="text-xl text-black focus:outline-none"
         >
           {isMobileMenuOpen ? <FaTimes size={18} /> : <FaBars size={18} />}
@@ -97,9 +103,9 @@ const MainNavbar: React.FC = () => {
       <nav className="hidden lg:flex lg:justify-center lg:py-4 lg:border-b">
         <div className="flex justify-center w-full mx-auto space-x-6">
           {NavLinks.map(({ href, label }) => (
-            <a 
-              key={label} 
-              href={href} 
+            <a
+              key={label}
+              href={href}
               className="text-black font-semibold hover:text-white transition-colors"
             >
               {label}

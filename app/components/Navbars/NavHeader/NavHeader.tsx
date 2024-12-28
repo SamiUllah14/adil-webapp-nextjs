@@ -58,8 +58,9 @@ const NavHeader = () => {
 
           <div className="hidden lg:flex flex-1 mx-6">
             <CustomSearchBar
-              placeholder="Search Store"
-             
+              placeholder="Search Store" onSearchComplete={function (): void {
+                throw new Error("Function not implemented.");
+              } }             
             />
           </div>
 
@@ -86,6 +87,7 @@ const NavHeader = () => {
                 <Link href="/Register" className="text-blue-500 hover:text-blue-600">
                   Register
                 </Link>
+       
               </div>
             )}
 

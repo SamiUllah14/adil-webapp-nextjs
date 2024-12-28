@@ -2,8 +2,18 @@
 
 import React from 'react';
 import SalesGraphComponent from './components/SalesGraphComponent/SalesGraphComponent';
+import useAdminProtection from '../components/AdminProtectedRoute/useAdminProtection';
+import useLoginStore from '../Services&ZustandState/Authentication/LoginStore';
+import UnAuthPerson from '../components/UnAuthPerson/unAuthPerson';
 
 const AdminDashboard: React.FC = () => {
+  const { role } = useLoginStore();
+  useAdminProtection(); // Protect the page
+
+  if (role === null) {
+    return <UnAuthPerson/>; // Wait for role to be determined
+  }
+
   return (
     <div className="min-h-screen flex flex-col lg:flex-row">
    

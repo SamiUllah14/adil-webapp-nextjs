@@ -1,12 +1,11 @@
 "use client";
 import React from "react";
 import { useCartStore } from "./ZustandStore/store";
-import { AlsoBoughtItemComponent } from "./components/AlsoBoughtItem";
 import { CartItemComponent } from "./components/CartItem";
 import { OrderSummaryComponent } from "./components/Order Summary";
 
 const ShoppingCartPage: React.FC = () => {
-  const { cartItems, alsoBoughtItems } = useCartStore();
+  const { cartItems } = useCartStore();
 
   return (
     <section className="bg-white py-8 antialiased md:py-16">
@@ -31,17 +30,7 @@ const ShoppingCartPage: React.FC = () => {
               )}
             </div>
 
-            {/* People also bought */}
-            <div className="hidden xl:mt-8 xl:block">
-              <h3 className="text-2xl font-semibold text-gray-900">
-                People also bought
-              </h3>
-              <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:mt-8 lg:grid-cols-3">
-                {alsoBoughtItems.map((item) => (
-                  <AlsoBoughtItemComponent key={item.id} item={item} />
-                ))}
-              </div>
-            </div>
+    
           </div>
 
           {/* Order Summary */}

@@ -1,7 +1,7 @@
 import AllProducts from "./components/ExploreAllMedicines/AllProducts";
 import Banner from "./components/Banner/Banner";
 import CustomFeatureBox from "./Categories/components/CustomCategoryBox/CustomBox";
-import HomeBlogComp from "./components/HomeBlogComp/HomeBlogComp";
+import HomeBlogComp from "./components/MainHomeLocation/HomeBlogComp";
 import Testimonials from "./components/Testimonials/Testimonials";
 import TopSellingProducts from "./components/TopSellingProducts/TopSellingProducts";
 import bannerImage from "@/app/images/bannerImage.png";
@@ -9,6 +9,7 @@ import AdilPharmacyMobile from "@/app/images/AdilPharmacyMobile.png";
 
 
 export default function Home() {
+
   return (
 
 
@@ -16,8 +17,8 @@ export default function Home() {
 
 
 <Banner
-      desktopImageSrc={bannerImage} // Image for desktop
-      mobileImageSrc={AdilPharmacyMobile}   // Image for mobile
+      desktopImageSrc={bannerImage} 
+      mobileImageSrc={AdilPharmacyMobile}  
       altText="Welcome Banner"
       additionalClasses="custom-banner"
     />
@@ -42,6 +43,8 @@ export default function Home() {
 <Testimonials/>
 
 </div>
+
+
 
       </>
 

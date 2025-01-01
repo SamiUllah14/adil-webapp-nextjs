@@ -4,9 +4,9 @@
 import React, { useEffect } from "react";
 import Banner from "../components/Banner/Banner";
 import bannerImage from "@/app/images/allProducts.png";
-import ProductGrid from "./components/Products/Products";
 import useProductStore from "./ZustandStore/AllProductStore";
 import AllProductsMobile from "@/app/images/AllProductsMobile.png";
+import ProductGrid from "./components/Products/Products";
 
 const Page: React.FC = () => {
   const { fetchProducts, isLoading, error } = useProductStore();

@@ -8,6 +8,8 @@ import useLoginStore from "@/app/Services&ZustandState/Authentication/LoginStore
 import CustomSearchBar from "../../CustomSearchBar/CustomSearchBar";
 import { useCartStore } from "@/app/ShoppingCart/ZustandStore/store";
 import { useRouter } from 'next/navigation'
+import Image from 'next/image'
+import LogoImage from '@/app/images/greenlogos.png'
 
 const NavHeader = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -43,11 +45,14 @@ const NavHeader = () => {
       <nav className="fixed top-0 left-0 w-full bg-white shadow-md z-40">
         <div className="container mx-auto flex items-center justify-between py-4 px-6 lg:px-12">
           <Link href="/" className="flex items-center">
-            <img
-              src="https://placehold.co/50x50"
-              alt="Adil Pharmacy logo"
-              className="h-12 w-12 rounded-full mr-3"
-            />
+          <Image
+      src={LogoImage}
+      alt="Adil Pharmacy Pasrur logo"
+      width={60} 
+      height={60} 
+      // blurDataURL="data:..." automatically provided
+      // placeholder="blur" // Optional blur-up while loading
+    />
             <div>
               <h1 className="text-2xl font-semibold text-green-600">
                 Adil Pharmacy

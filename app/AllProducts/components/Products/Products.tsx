@@ -1,20 +1,15 @@
 import React, { useState, useEffect } from "react";
 import ProductCard from "./ProductCard";
 import useProductStore from "../../ZustandStore/AllProductStore";
-import MobileSidebar from "../SideBar/MobileSidebar";
 import CustomButton from "@/app/components/CustomButton/CustomButton";
-import { Product } from "../../ZustandStore/type";
 
-const ProductGrid: React.FC = () => {
+const ProductGrid = () => {
   const [sortOption, setSortOption] = useState<string>("Alphabetical-A-Z");
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const { products, fetchProducts, isLoading, error } = useProductStore();
 
   useEffect(() => {
-    if (products.length === 0) {
-      fetchProducts({ page: 1, pageSize: 12 });
-    }
+    if (!products.length) fetchProducts({ page: 1, pageSize: 12 });
   }, [fetchProducts, products.length]);
 
   const handleSort = (option: string) => {
@@ -24,29 +19,21 @@ const ProductGrid: React.FC = () => {
   };
 
   const handleLoadMore = () => {
-    const nextPage = currentPage + 1;
-    setCurrentPage(nextPage);
-    fetchProducts({ page: nextPage, pageSize: 12 });
+    fetchProducts({ page: currentPage + 1, pageSize: 12 });
+    setCurrentPage((prev) => prev + 1);
   };
 
-  const sortedProducts = products.slice().sort((a, b) => {
-    switch (sortOption) {
-      case "Alphabetical-A-Z":
-        return a.name.localeCompare(b.name);
-      case "Alphabetical-Z-A":
-        return b.name.localeCompare(a.name);
-      case "Price-low-high":
-        return a.price - b.price;
-      case "Price-high-low":
-        return b.price - a.price;
-      default:
-        return 0;
-    }
+  const sortedProducts = [...products].sort((a, b) => {
+    const sortMap: Record<string, () => number> = {
+      "Alphabetical-A-Z": () => a.name.localeCompare(b.name),
+      "Alphabetical-Z-A": () => b.name.localeCompare(a.name),
+      "Price-low-high": () => a.price - b.price,
+      "Price-high-low": () => b.price - a.price,
+    };
+    return (sortMap[sortOption] || (() => 0))();
   });
 
-  if (isLoading && products.length === 0) {
-    return <p className="text-center mt-10">Loading products...</p>;
-  }
+  if (isLoading && !products.length) return <p className="text-center mt-10">Loading products...</p>;
   if (error) return <p className="text-center mt-10 text-red-500">Error: {error}</p>;
 
   return (
@@ -62,29 +49,23 @@ const ProductGrid: React.FC = () => {
           <option value="Price-low-high">Price, low to high</option>
           <option value="Price-high-low">Price, high to low</option>
         </select>
-        <MobileSidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
       </div>
 
-      {sortedProducts.length === 0 ? (
-        <p className="text-center mt-10">No products available.</p>
-      ) : (
+      {sortedProducts.length ? (
         <>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-            {sortedProducts.map((product: Product) => (
+            {sortedProducts.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
           </div>
-
-          <div className="flex justify-center mt-6">
-            {isLoading ? (
-              <p>Loading more products...</p>
-            ) : (
-              sortedProducts.length % 12 === 0 && (
-                <CustomButton text="Load More" onClick={handleLoadMore} />
-              )
-            )}
-          </div>
+          {sortedProducts.length % 12 === 0 && !isLoading && (
+            <div className="flex justify-center mt-6">
+              <CustomButton text="Load More" onClick={handleLoadMore} />
+            </div>
+          )}
         </>
+      ) : (
+        <p className="text-center mt-10">No products available.</p>
       )}
     </div>
   );

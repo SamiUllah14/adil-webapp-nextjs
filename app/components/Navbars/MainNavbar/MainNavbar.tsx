@@ -18,19 +18,17 @@ const MainNavbar: React.FC = () => {
     { href: '/', label: 'Home' },
     { href: '/AllProducts', label: 'All Products' },
     { href: '/adil-pharmacy-pasrur', label: 'Location' },
-    { href: '#', label: 'Blog' },
-    { href: '#', label: 'Contact' },
+    { href: '/ContactPage', label: 'Contact' },
     ...(role === 'Admin' ? [{ href: '/Admin', label: 'Admin Panel' }] : []), // Admin-specific link
   ];
 
   // Mobile menu links
   const MOBILE_MENU_ITEMS = [
-    { href: '#', label: 'Login' },
-    { href: '#', label: 'Register' },
+    { href: '/Login', label: 'Login' },
+    { href: '/Register', label: 'Register' },
     { href: '/AllProducts', label: 'All Products' },
     { href: '/adil-pharmacy-pasrur', label: 'Location' },
-    { href: '#', label: 'Blog' },
-    { href: '#', label: 'Contact' },
+    { href: '/ContactPage', label: 'Contact' },
     ...(role === 'Admin' ? [{ href: '/Admin', label: 'Admin Panel' }] : []), // Admin-specific link
   ];
 

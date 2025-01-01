@@ -27,6 +27,7 @@ export interface Product {
   categoryName: string;
   rating: number;
   reviewsCount: number;
+  
 }
 
 export interface CartItem extends Product {
@@ -36,6 +37,14 @@ export interface CartItem extends Product {
 export interface Category {
   id: number;
   name: string;
-  imageUrl: string; // New property
+  imageUrl: string; 
 
+}
+export interface TopSellingProduct {
+  id: number;
+  name: string;
+  imageUrl: string;
+  discount: number;
+  price: number;
+  totalSold: number;
 }

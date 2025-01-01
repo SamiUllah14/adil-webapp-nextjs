@@ -1,6 +1,6 @@
 import { create } from 'zustand';
-import apiClient from './api';
 import { Product } from '@/app/AllProducts/ZustandStore/type';
+import apiClient from '@/app/AllProducts/ZustandStore/api';
 
 interface ProductStore {
   products: Product[];

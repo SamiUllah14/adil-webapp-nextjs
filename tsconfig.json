@@ -33,7 +33,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts"
-  ],
+, "app/Chat/components/ChatBox"  ],
   "exclude": [
     "node_modules"
   ]

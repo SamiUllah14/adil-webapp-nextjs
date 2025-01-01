@@ -6,9 +6,9 @@ import useProductStore, { Product } from "../../ZustandStore/AllProductStore";
 
 interface ProductCardProps {
   product: Product;
-  onClick?: (product: Product) => void; // Optional callback for custom click handling
-  showDiscountBadge?: boolean; // Option to show or hide the discount badge
-  showViewDetailsButton?: boolean; // Option to show or hide the "View Details" button
+  onClick?: (product: Product) => void; 
+  showDiscountBadge?: boolean; 
+  showViewDetailsButton?: boolean; 
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({
@@ -70,7 +70,6 @@ const ProductCard: React.FC<ProductCardProps> = ({
         {/* Discounted Price */}
         <p className="text-primary font-bold mt-1">Rs.{remainingPrice.toFixed(2)}</p>
 
-        {/* Optional "View Details" Button */}
         {showViewDetailsButton && (
           <div className="mt-3">
             <button className="w-full bg-[#00bf63] text-white py-2 px-4 rounded hover:bg-[#00bf20] transition-colors duration-300">

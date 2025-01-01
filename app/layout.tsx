@@ -4,6 +4,7 @@ import "./globals.css";
 import Navbar from "./components/Navbars/Navbar/Navbar";
 import Footer from "./components/Footer/Footer";
 import InitializeAuth from "./utils/InitializeAuth";
+import WhatsAppLogo from "./components/WhatsAppLogo/WhatsAppLogo";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -31,11 +32,14 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col`}
       >
+        
                 <InitializeAuth />
 
         <Navbar />
 
         <main className="flex-grow">{children}</main>
+        <WhatsAppLogo /> {/* WhatsApp logo is persistent */}
+
         <Footer />
       </body>
     </html>

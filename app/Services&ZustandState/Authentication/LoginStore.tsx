@@ -17,7 +17,7 @@ interface LoginState {
   logout: () => void;
 }
 
-const useLoginStore = create<LoginState>((set) => ({
+const useLoginStore = create<LoginState>((set, get) => ({
   mobileNumber: '',
   password: '',
   isLoading: false,
@@ -34,9 +34,10 @@ const useLoginStore = create<LoginState>((set) => ({
   setRole: (role) => set({ role }),
 
   login: async () => {
+    set({ isLoading: true }); // Ensure loading state is set before operations
+    const { mobileNumber, password } = get(); // Use `get` instead of `useLoginStore.getState()`
+
     try {
-      set({ isLoading: true });
-      const { mobileNumber, password } = useLoginStore.getState();
       const response = await axios.post('http://localhost:5151/api/person/login', {
         mobileNumber,
         password,
@@ -54,7 +55,7 @@ const useLoginStore = create<LoginState>((set) => ({
       console.error('Login Failed:', error);
       return false;
     } finally {
-      set({ isLoading: false });
+      set({ isLoading: false }); // Ensure loading state is unset after operations
     }
   },
 

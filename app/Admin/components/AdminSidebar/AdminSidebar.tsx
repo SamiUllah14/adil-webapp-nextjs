@@ -117,7 +117,7 @@ const AdminSidebar: React.FC = () => {
           />
 
           <Dropdown
-            title="Product Management"
+            title="New Orders"
             items={[
               { label: 'Orders', path: '/Admin/Orders' },
             ]}

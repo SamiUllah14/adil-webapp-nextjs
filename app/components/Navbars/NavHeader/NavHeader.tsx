@@ -2,23 +2,19 @@
 
 import React, { useState, useEffect } from "react";
 import { FaShoppingCart } from "react-icons/fa";
-import Sidebar from "./Sidebar";
 import Link from "next/link";
 import useLoginStore from "@/app/Services&ZustandState/Authentication/LoginStore";
 import CustomSearchBar from "../../CustomSearchBar/CustomSearchBar";
 import { useCartStore } from "@/app/ShoppingCart/ZustandStore/store";
-import { useRouter } from 'next/navigation'
-import Image from 'next/image'
-import LogoImage from '@/app/images/greenlogos.png'
+import { useRouter } from 'next/navigation';
+import Image from 'next/image';
+import LogoImage from '@/app/images/greenlogos.png';
 
 const NavHeader = () => {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const { token, logout } = useLoginStore();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const { cartItems } = useCartStore();
-
-  const closeSidebar = () => setIsSidebarOpen(false);
-  const router = useRouter()
+  const router = useRouter();
 
   const totalCartQuantity = cartItems.reduce(
     (total, item) => total + item.quantity,
@@ -34,25 +30,23 @@ const NavHeader = () => {
   }, [token]);
 
   const handleLogout = () => {
-    logout();
-    localStorage.removeItem("jwtToken");
-    setIsLoggedIn(false);
+    logout(); // Call the logout function from Zustand store
+    localStorage.removeItem("jwtToken"); // Remove the token from localStorage
+    setIsLoggedIn(false); // Update state
+    router.push('/Login'); // Redirect to the Login page
   };
 
   return (
     <>
-      <Sidebar isOpen={isSidebarOpen} closeSidebar={closeSidebar} />
       <nav className="fixed top-0 left-0 w-full bg-white shadow-md z-40">
         <div className="container mx-auto flex items-center justify-between py-4 px-6 lg:px-12">
           <Link href="/" className="flex items-center">
-          <Image
-      src={LogoImage}
-      alt="Adil Pharmacy Pasrur logo"
-      width={60} 
-      height={60} 
-      // blurDataURL="data:..." automatically provided
-      // placeholder="blur" // Optional blur-up while loading
-    />
+            <Image
+              src={LogoImage}
+              alt="Adil Pharmacy Pasrur logo"
+              width={60}
+              height={60}
+            />
             <div>
               <h1 className="text-2xl font-semibold text-green-600">
                 Adil Pharmacy
@@ -63,13 +57,15 @@ const NavHeader = () => {
 
           <div className="hidden lg:flex flex-1 mx-6">
             <CustomSearchBar
-              placeholder="Search Store" onSearchComplete={function (): void {
+              placeholder="Search Store"
+              onSearchComplete={() => {
                 throw new Error("Function not implemented.");
-              } }             
+              }}
             />
           </div>
 
           <div className="flex items-center space-x-4">
+            {/* Desktop View */}
             {isLoggedIn ? (
               <div className="hidden lg:flex items-center space-x-2">
                 <i className="fas fa-user text-xl text-gray-600"></i>
@@ -92,13 +88,24 @@ const NavHeader = () => {
                 <Link href="/Register" className="text-blue-500 hover:text-blue-600">
                   Register
                 </Link>
-       
+              </div>
+            )}
+
+            {/* Mobile View */}
+            {isLoggedIn && (
+              <div className="lg:hidden">
+                <button
+                  onClick={handleLogout}
+                  className="text-blue-500 hover:text-blue-600"
+                >
+                  Logout
+                </button>
               </div>
             )}
 
             <div
               className="relative flex items-center cursor-pointer"
-              onClick={() => router.push('/ShoppingCart')}              
+              onClick={() => router.push('/ShoppingCart')}
             >
               <FaShoppingCart className="text-2xl text-gray-600" />
               {totalCartQuantity > 0 && (

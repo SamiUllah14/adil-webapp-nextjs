@@ -50,7 +50,7 @@ const OrderReportComponent: React.FC = () => {
               <p className="text-lg font-bold text-gray-900">Rs.{totalAmount.toLocaleString()}</p>
             </div>
             <div className="flex justify-between items-center">
-              <p className="text-lg font-medium text-gray-600">Tax</p>
+              <p className="text-lg font-medium text-gray-600">Delivery Charges for Pasrur only</p>
               <p className="text-lg font-bold text-gray-900">Rs.{tax.toLocaleString()}</p>
             </div>
             <div className="flex justify-between items-center border-t border-gray-300 pt-4">

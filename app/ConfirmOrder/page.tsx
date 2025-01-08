@@ -1,10 +1,15 @@
 "use client";
+
 import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { FaMapMarkerAlt, FaCity, FaPhoneAlt, FaTruck } from "react-icons/fa";
 import OrderReportComponent from "./components/report";
 import CustomButton from "../components/CustomButton/CustomButton";
 import { useCartStore } from "@/app/ShoppingCart/ZustandStore/store";
+import useLoginStore from "@/app/Services&ZustandState/Authentication/LoginStore";
+import { HubConnectionBuilder, HubConnection, LogLevel } from "@microsoft/signalr";
 
+// List of Pakistani cities
 const pakistaniCities = [
   "Abbottabad",
   "Ahmedpur East",
@@ -100,18 +105,20 @@ const pakistaniCities = [
   "Zhob",
 ];
 
-
-
-
 const DeliveryFormPage: React.FC = () => {
-  const [isMobile, setIsMobile] = useState(false);
+  const router = useRouter();
+  const { token } = useLoginStore();
   const { cartItems, calculateTotal } = useCartStore();
+
+  const [isMobile, setIsMobile] = useState(false);
   const [address, setAddress] = useState("");
   const [city, setCity] = useState("Pasrur");
   const [altPhone, setAltPhone] = useState("");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [connection, setConnection] = useState<HubConnection | null>(null);
 
+  // Handle responsive design
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth <= 768);
     handleResize();
@@ -119,26 +126,65 @@ const DeliveryFormPage: React.FC = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  // Establish SignalR connection
+  useEffect(() => {
+    const setupSignalRConnection = async () => {
+      const conn = new HubConnectionBuilder()
+        .withUrl("http://localhost:5151/notificationHub") // Make sure this matches your backend URL
+        .configureLogging(LogLevel.Information)
+        .withAutomaticReconnect()
+        .build();
+
+      try {
+        await conn.start();
+        console.log("SignalR connected on customer side.");
+        setConnection(conn);
+      } catch (error) {
+        console.error("SignalR connection failed:", error);
+      }
+    };
+
+    setupSignalRConnection();
+
+    return () => {
+      if (connection) {
+        connection.stop();
+        console.log("SignalR connection stopped (customer side).");
+      }
+    };
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!token) {
+      router.push("/Login");
+      return;
+    }
+
     setLoading(true);
+
+    // Prepare order data
     const delivery = { address, city, altPhone };
     const totalAmount = calculateTotal();
     const tax = 10;
     const finalAmount = totalAmount + tax;
-    const orderItems = cartItems.map(item => ({
+    const orderItems = cartItems.map((item) => ({
       productName: item.name,
       quantity: item.quantity,
       unitPrice: item.price,
       totalPrice: item.quantity * item.price,
     }));
-    const order = { totalAmount, tax, finalAmount, orderItems };
-    const payload = { delivery, order };
+    const payload = { delivery, order: { totalAmount, tax, finalAmount, orderItems } };
 
+    // Call the backend to place the order
     try {
       const response = await fetch("http://localhost:5151/api/checkout", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify(payload),
       });
 
@@ -146,6 +192,9 @@ const DeliveryFormPage: React.FC = () => {
         const data = await response.json();
         console.log("Order placed. Order ID:", data.OrderId);
         setSuccess(true);
+
+        // The server (controller) will broadcast to admins via SignalR,
+        // so we don't call a hub method here.
       } else {
         console.error("Failed to place order:", await response.json());
       }
@@ -157,22 +206,22 @@ const DeliveryFormPage: React.FC = () => {
   };
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center bg-gray-50 p-4">
-      <div className="flex w-full max-w-5xl flex-col gap-8">
+    <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-blue-50 to-gray-50 p-4">
+      <div className="flex w-full max-w-4xl flex-col gap-8 rounded-lg shadow-lg bg-white p-6">
         {isMobile && <OrderReportComponent />}
-        <div className="w-full rounded-xl bg-white p-6 shadow-lg">
-          <div className="mb-8 flex items-center gap-2 text-primary-600">
-            <FaTruck className="h-6 w-6" />
-            <h1 className="text-2xl font-bold text-gray-800">Delivery Details</h1>
+        <div className="flex flex-col gap-4">
+          <div className="flex items-center gap-3 text-blue-600">
+            <FaTruck className="h-8 w-8" />
+            <h1 className="text-3xl font-extrabold">Delivery Details</h1>
           </div>
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-6">
             {/* Address */}
-            <div>
-              <label htmlFor="address" className="block text-sm font-medium">
+            <div className="flex flex-col gap-1">
+              <label htmlFor="address" className="text-sm font-medium text-gray-700">
                 Address
               </label>
-              <div className="relative">
-                <FaMapMarkerAlt className="absolute left-3 top-2 text-gray-400" />
+              <div className="relative flex items-center">
+                <FaMapMarkerAlt className="absolute left-3 text-gray-400" />
                 <input
                   id="address"
                   type="text"
@@ -180,26 +229,28 @@ const DeliveryFormPage: React.FC = () => {
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
                   required
-                  className="pl-10"
+                  className="w-full rounded-lg border border-gray-300 bg-gray-50 py-2 pl-10 pr-3 
+                             focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                 />
               </div>
             </div>
 
             {/* City */}
-            <div>
-              <label htmlFor="city" className="block text-sm font-medium">
+            <div className="flex flex-col gap-1">
+              <label htmlFor="city" className="text-sm font-medium text-gray-700">
                 City
               </label>
-              <div className="relative">
-                <FaCity className="absolute left-3 top-2 text-gray-400" />
+              <div className="relative flex items-center">
+                <FaCity className="absolute left-3 text-gray-400" />
                 <select
                   id="city"
                   value={city}
                   onChange={(e) => setCity(e.target.value)}
                   required
-                  className="pl-10"
+                  className="w-full rounded-lg border border-gray-300 bg-gray-50 py-2 pl-10 pr-3 
+                             focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                 >
-                  {pakistaniCities.map(cityName => (
+                  {pakistaniCities.map((cityName) => (
                     <option key={cityName} value={cityName}>
                       {cityName}
                     </option>
@@ -208,28 +259,39 @@ const DeliveryFormPage: React.FC = () => {
               </div>
             </div>
 
-            {/* Phone */}
-            <div>
-              <label htmlFor="altPhone" className="block text-sm font-medium">
+            {/* Mobile Number */}
+            <div className="flex flex-col gap-1">
+              <label htmlFor="altPhone" className="text-sm font-medium text-gray-700">
                 Mobile Number
               </label>
-              <div className="relative">
-                <FaPhoneAlt className="absolute left-3 top-2 text-gray-400" />
+              <div className="relative flex items-center">
+                <FaPhoneAlt className="absolute left-3 text-gray-400" />
                 <input
                   id="altPhone"
                   type="tel"
-                  placeholder="Provide another contact"
+                  placeholder="Provide contact number"
                   value={altPhone}
                   onChange={(e) => setAltPhone(e.target.value)}
                   required
-                  className="pl-10"
+                  className="w-full rounded-lg border border-gray-300 bg-gray-50 py-2 pl-10 pr-3 
+                             focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                 />
               </div>
             </div>
 
-            <CustomButton text={loading ? "Processing..." : "Proceed"} />
+            {/* Buttons */}
+            <div className="flex justify-between gap-4">
+              <CustomButton text={loading ? "Processing..." : "Proceed"} />
+              <CustomButton text="Continue Shopping" onClick={() => router.push("/")} />
+            </div>
           </form>
-          {success && <p className="text-green-500 mt-4">Order placed successfully!</p>}
+
+          {/* Success Message */}
+          {success && (
+            <div className="mt-4 rounded-lg bg-green-100 p-4 text-green-800">
+              Order placed successfully!
+            </div>
+          )}
         </div>
         {!isMobile && <OrderReportComponent />}
       </div>

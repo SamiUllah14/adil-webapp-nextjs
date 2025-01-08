@@ -8,45 +8,33 @@ interface Order {
   finalAmount: number;
 }
 
-interface Delivery {
-  id: number;
-  address: string;
-  city: string;
-  altPhone: string;
-}
-
 interface StoreState {
   orders: Order[];
-  deliveries: Delivery[];
-  fetchOrders: () => Promise<void>;
-  fetchDeliveries: () => Promise<void>;
+  fetchOrders: (page: number) => Promise<Order[]>;
 }
 
-export const useAppStore = create<StoreState>((set) => ({
+export const useAppStore = create<StoreState>((set, get) => ({
   orders: [],
-  deliveries: [],
-  fetchOrders: async () => {
+  fetchOrders: async (page: number) => {
     try {
-      const response = await fetch('http://localhost:5151/api/checkout');
+      // pageSize is still here, but it won't matter since we won't be paginating
+      const response = await fetch(`http://localhost:5151/api/checkout?page=${page}&pageSize=20`);
       if (response.ok) {
-        const orders = await response.json();
-        set({ orders });
-        console.log('Orders fetched:', orders);
+        const data: Order[] = await response.json();
+        const existingOrders = get().orders;
+
+        const newOrders = data.filter(
+          (order) => !existingOrders.some((existing) => existing.id === order.id)
+        );
+        set({ orders: [...existingOrders, ...newOrders] });
+        return newOrders;
+      } else {
+        console.error('Failed to fetch orders:', response.statusText);
+        return [];
       }
     } catch (error) {
-      console.error('Failed to fetch orders:', error);
-    }
-  },
-  fetchDeliveries: async () => {
-    try {
-      const response = await fetch('http://localhost:5151/api/delivery');
-      if (response.ok) {
-        const deliveries = await response.json();
-        set({ deliveries });
-        console.log('Deliveries fetched:', deliveries);
-      }
-    } catch (error) {
-      console.error('Failed to fetch deliveries:', error);
+      console.error('Error fetching orders:', error);
+      return [];
     }
   },
 }));
